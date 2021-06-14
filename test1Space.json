@@ -1,0 +1,26 @@
+{
+    "globals": {
+        "buildingClosedStart": "2359",
+        "buildingClosedEnd": "0400"
+    },
+    "computers": [
+        {
+            "type": "powerful",
+            "count": 1
+        },
+        {
+            "type": "thin",
+            "count": 1
+        }
+    ],
+    "spaces": [
+        {
+            "type": "medium",
+            "count": 1
+        },
+        {
+            "type": "large",
+            "count": 1
+        }
+    ]
+}

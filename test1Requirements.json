@@ -1,0 +1,18 @@
+{
+    "users": [
+        {
+            "name": "Cole Webb",
+            "space": "medium",
+            "computer": "powerful",
+            "availableStart": "0900",
+            "availableEnd": "1900"
+        },
+        {
+            "name": "Billy Joel Armstrong",
+            "space": "large",
+            "computer": "thin",
+            "availableStart": "1200",
+            "availableEnd": "2300"
+        }
+    ]
+}
