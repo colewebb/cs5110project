@@ -4,11 +4,24 @@
         "buildingClosedEnd": 4
     },
     "computers": {
+        "ranking": {
             "powerful": 1,
-	    "thin": 1
+            "thin": 2
+        },
+        "count": {
+            "powerful": 1,
+	        "thin": 1
+        }
     },
     "spaces": {
+        "ranking": {
+            "large": 1,
+            "medium": 2,
+            "small": 3
+        },
+        "count": {
             "medium": 1,
-	    "large" : 1
+            "large" : 1
+        }
     }
 }

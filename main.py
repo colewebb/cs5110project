@@ -28,6 +28,9 @@ class projectOpen():
             print("Error 1")
             exit(1)
 
+    def utility(self):
+        pass
+
     def main(self):
         print()
         # print(self.req)
@@ -63,6 +66,7 @@ def dataFusion(req, space):
     for i in range(space['globals']['buildingClosedEnd'], 25):
         print(i, limit[i])
         
+
 
 
 if __name__ == "__main__":

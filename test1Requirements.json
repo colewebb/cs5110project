@@ -6,7 +6,9 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-	    "hoursNeeded": 1
+	        "hoursNeeded": 1,
+            "importance": 10
+            
         },
         {
             "name": "Billy Joel Armstrong",
@@ -14,7 +16,8 @@
             "computer": "thin",
             "availableStart": 12,
             "availableEnd": 23,
-	    "hoursNeeded": 1
+	        "hoursNeeded": 1,
+            "importance": 99
         }
     ]
 }
