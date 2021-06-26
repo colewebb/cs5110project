@@ -4,15 +4,17 @@
             "name": "Cole Webb",
             "space": "medium",
             "computer": "powerful",
-            "availableStart": "0900",
-            "availableEnd": "1900"
+            "availableStart": 9,
+            "availableEnd": 19,
+	    "hoursNeeded": 1
         },
         {
             "name": "Billy Joel Armstrong",
             "space": "large",
             "computer": "thin",
-            "availableStart": "1200",
-            "availableEnd": "2300"
+            "availableStart": 12,
+            "availableEnd": 23,
+	    "hoursNeeded": 1
         }
     ]
 }
