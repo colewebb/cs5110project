@@ -4,10 +4,6 @@
         "buildingClosedEnd": 4
     },
     "computers": {
-<<<<<<< Updated upstream
-            "powerful": 1,
-	    "thin": 1
-=======
         "ranking": {
 		"powerful": 1,
 		"medium": 2,
@@ -18,7 +14,6 @@
 		"medium": 1,
 	        "thin": 1
         }
->>>>>>> Stashed changes
     },
     "spaces": {
             "medium": 1,

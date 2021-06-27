@@ -6,12 +6,8 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-<<<<<<< Updated upstream
-	    "hoursNeeded": 1
-=======
-	    "hoursNeeded": 1,
+	    "hoursNeeded": 2,
             "importance": 10
-            
         },
 	{
             "name": "Griffin",
@@ -19,10 +15,44 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-	    "hoursNeeded": 1,
+	    "hoursNeeded": 4,
             "importance": 10
-            
->>>>>>> Stashed changes
+        },
+	{
+            "name": "Bob",
+            "space": "medium",
+            "computer": "powerful",
+            "availableStart": 9,
+            "availableEnd": 19,
+	    "hoursNeeded": 5,
+            "importance": 10
+        },
+	{
+            "name": "Joe",
+            "space": "medium",
+            "computer": "powerful",
+            "availableStart": 9,
+            "availableEnd": 19,
+	    "hoursNeeded": 3,
+            "importance": 10
+        },
+	{
+            "name": "Connor",
+            "space": "medium",
+            "computer": "powerful",
+            "availableStart": 9,
+            "availableEnd": 19,
+	    "hoursNeeded": 3,
+            "importance": 10
+        },
+	{
+            "name": "Alice",
+            "space": "medium",
+            "computer": "powerful",
+            "availableStart": 9,
+            "availableEnd": 19,
+	    "hoursNeeded": 5,
+            "importance": 10
         },
         {
             "name": "Billy Joel Armstrong",
@@ -30,12 +60,8 @@
             "computer": "thin",
             "availableStart": 12,
             "availableEnd": 23,
-<<<<<<< Updated upstream
-	    "hoursNeeded": 1
-=======
-	    "hoursNeeded": 1,
+	    "hoursNeeded": 3,
             "importance": 99
->>>>>>> Stashed changes
         }
     ]
 }
