@@ -1,5 +1,14 @@
 import json
+import enum
 import os
+
+class Size(enum.Enum):
+    small = 1
+    medium = 2
+    large = 3
+
+    thin = 1
+    powerful = 3
 
 class projectOpen():
     def __init__(self, requirements, space):
@@ -42,26 +51,53 @@ def dataFusion(req, space):
             'spaces': space['spaces'].copy(),
             'users': []
         }
-        print(limit[i])
     
     #set initial matchups
+    notFound = []
     for user in req['users']:
         #start at their available start
         start = user['availableStart']
         end = user['availableEnd']
+        hours = user['hoursNeeded']
         minSpace = user['space']
         minComp = user['computer']
-        current = start
+        found = False
 
-        print(user['name'])
+        # test = user['space']
 
-        if limit[current]['spaces'][minSpace] > 0 and limit[current]['computers'][minComp] > 0:
-            limit[current]['spaces'][minSpace] = limit[current]['spaces'][minSpace] - 1
-            limit[current]['computers'][minComp] = limit[current]['computers'][minComp] -1
-            limit[current]['users'] = limit[current]['users'].append(user['name'])
+        # print(test)
+        # print(Size[test].value)
+
+        #if there is a computer and space that exactly matches their conditions
+        for i in range(start, end-hours):
+            # print(i,limit[i]['spaces']['count'],limit[i]['computers']['count'])
+            if limit[i]['spaces']['count'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
+                found = True
+                #check to make sure they are available for the entire time they need to work
+                for x in range(1,hours):
+                    if not limit[i+x]['spaces']['count'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
+                        found = False
+                #if they are, then break
+                if found:
+                    current = i
+                    break
+
+        #if there is, give it to them
+        # if found:
+        #     print("found at", current)
+        #     for x in range(0,hours):
+        #         print(x)
+        #         limit[current+x]['spaces']['count'][minSpace] = limit[current+x]['spaces']['count'][minSpace] - 1
+        #         limit[current+x]['computers']['count'][minComp] = limit[current+x]['computers']['count'][minComp] -1
+        #         limit[current+x]['users'].append(user['name'])
+        # else:
+        #     print("could not find suitable place for", user['name'])
+    # printSchedule(limit)
         
-    for i in range(space['globals']['buildingClosedEnd'], 25):
-        print(i, limit[i])
+def printSchedule(limit):
+    # print(limit)
+    for i in range(4,24):
+        print(i, limit[i]['users'])
         
 
 

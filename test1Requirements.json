@@ -6,7 +6,23 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
+<<<<<<< Updated upstream
 	    "hoursNeeded": 1
+=======
+	    "hoursNeeded": 1,
+            "importance": 10
+            
+        },
+	{
+            "name": "Griffin",
+            "space": "medium",
+            "computer": "powerful",
+            "availableStart": 9,
+            "availableEnd": 19,
+	    "hoursNeeded": 1,
+            "importance": 10
+            
+>>>>>>> Stashed changes
         },
         {
             "name": "Billy Joel Armstrong",
@@ -14,7 +30,12 @@
             "computer": "thin",
             "availableStart": 12,
             "availableEnd": 23,
+<<<<<<< Updated upstream
 	    "hoursNeeded": 1
+=======
+	    "hoursNeeded": 1,
+            "importance": 99
+>>>>>>> Stashed changes
         }
     ]
 }
