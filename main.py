@@ -102,11 +102,11 @@ def dataFusion(req, space):
 
         #if there is a computer and space that exactly matches their conditions
         for i in range(start, end-hours):
-            if limit[i]['spaces'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
+            if limit[i]['spaces']['count'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
                 found = True
                 #check to make sure they are available for the entire time they need to work
                 for x in range(1,hours):
-                    if not limit[i+x]['spaces'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
+                    if not limit[i+x]['spaces']['count'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
                         found = False
                 #if they are, then break
                 if found:
@@ -116,9 +116,9 @@ def dataFusion(req, space):
         #if there is, give it to them
         if found:
             for x in range(0,hours):
-                limit[current+x]['spaces'][minSpace] = limit[current+x]['spaces'][minSpace] - 1
+                limit[current+x]['spaces']['count'][minSpace] = limit[current+x]['spaces']['count'][minSpace] - 1
                 limit[current+x]['computers']['count'][minComp] = limit[current+x]['computers']['count'][minComp] -1
-                limit[current+x]['users'].append(user['name'])
+                limit[current+x]['users'].append({'name': user['name'],'comp':minComp, 'space': minSpace})
         else:
             notFound.append(user)
         
@@ -130,12 +130,12 @@ def dataFusion(req, space):
         minComp = user['computer']
         found = False
         for i in range(space['globals']['buildingClosedEnd'], 25):
-            if limit[i]['spaces'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
+            if limit[i]['spaces']['count'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
                 found = True
                 #check to make sure they are available for the entire time they need to work
                 if hours + i < 25:
                     for x in range(1,hours):
-                        if not limit[i+x]['spaces'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
+                        if not limit[i+x]['spaces']['count'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
                             found = False
                 #if they are, then break
                 if found:
@@ -145,9 +145,9 @@ def dataFusion(req, space):
         if found:
             if hours + current < 25:
                 for x in range(0,hours):
-                    limit[current+x]['spaces'][minSpace] = limit[current+x]['spaces'][minSpace] - 1
+                    limit[current+x]['spaces']['count'][minSpace] = limit[current+x]['spaces']['count'][minSpace] - 1
                     limit[current+x]['computers']['count'][minComp] = limit[current+x]['computers']['count'][minComp] -1
-                    limit[current+x]['users'].append(user['name'])
+                    limit[current+x]['users'].append({'name': user['name'],'comp':minComp, 'space': minSpace})
             else:
                 next.append(user)
         else:
@@ -165,7 +165,7 @@ def genetic(initial, req):
     
     #create generation
     generation = []
-    for i in range(0,10):
+    for i in range(0,1):
         generation.append(copy.deepcopy(initial))
 
     #mutate something in each child
@@ -178,17 +178,61 @@ def evolve(parentGen, req, gensLeft):
         mutate = random.choice(req['users'])
 
         #take them out of the list
+        print(mutate['name'])
+        printSchedule(parent, [])
         for x in parent:
-            if mutate['name'] in parent[x]['users']:
-                parent[x]['users'].remove(mutate['name'])
-        
+            # printResources(parent, x)
+            for i in parent[x]['users']:
+                if mutate['name'] in i['name']:
+                    #remove their name from the list and add back their resources
+                    current = parent[x]
+                    current['spaces']['count'][i['space']] = current['spaces']['count'][i['space']] + 1
+                    current['computers']['count'][i['comp']] = current['computers']['count'][i['comp']] + 1
+                    print(i, "removed")
+                    current['users'].remove(i)
+            # printResources(parent, x)
+            # print()
+        printSchedule(parent, [])
+        print()
         #add them back to the list in a random place
         addToList(mutate, parent)
+        printSchedule(parent, [])
 
 
 def addToList(person, list):
-    #TODO: Implement adding person to the list somewhere randomly
-    pass
+    #choose random location
+    print()
+    start = random.randrange(4,24)
+    count = 0
+    choices = []
+    for i in range (start,24):
+        computers = list[i]['computers']['count']
+        spaces = list[i]['spaces']['count']
+        avail = getAvailable(list, i)
+        # print()
+        # print(avail)
+        if len(avail['computers']) > 0 and len(avail['spaces']) > 0:
+            compChoice = random.choice(avail['computers'])
+            spaceChoice = random.choice(avail['spaces'])
+            choices.append({'comp':compChoice, 'space':spaceChoice})
+            count = count + 1
+            # print(compChoice, spaceChoice)
+            if count == person['hoursNeeded']+1:
+                print(person,"added at", i)
+                counter = 0
+                for x in range(i-person['hoursNeeded'],i):
+                    current = list[x]
+                    current['spaces']['count'][choices[counter]['space']] = current['spaces']['count'][choices[counter]['space']] - 1
+                    current['computers']['count'][choices[counter]['comp']] = current['computers']['count'][choices[counter]['comp']] -1
+                    current['users'].append({'name': person['name'],'comp':choices[counter]['comp'], 'space': choices[counter]['space']})
+                    counter = counter + 1
+        else:
+            choices = []
+            count = 0
+            continue
+        
+    # for i in range (4,start):
+
 
 def printSchedule(limit, left):
     for i in range(4,24):
@@ -196,7 +240,22 @@ def printSchedule(limit, left):
     for x in left:
         print("Could not find a suitable place for", x['name'])
 
+def printResources(list, index):
+    print(list[index]['computers']['count'])
+    print(list[index]['spaces']['count'])
 
+def getAvailable(list, index):
+    computers = []
+    spaces = []
+    for x in list[index]['computers']['count']:
+        if list[index]['computers']['count'].get(x) > 0:
+            computers.append(x)
+
+    for x in list[index]['spaces']['count']:
+        if list[index]['spaces']['count'].get(x) > 0:
+            spaces.append(x)
+
+    return {'computers': computers, 'spaces':spaces}
 
 if __name__ == "__main__":
     # requirementsLocation = input(" Requirements location >>> ")
