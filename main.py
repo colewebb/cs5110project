@@ -154,54 +154,59 @@ def dataFusion(req, space):
             next.append(user)
     
     #TODO: check for a spot that has better equipment than the minimum
-    # test = user['space']
-    # print(test)
-    # print(Size[test].value)
 
     return limit
 
-def genetic(initial, req):
-    # printSchedule(initial, [])
-    
+def genetic(initial, req):    
     #create generation
     generation = []
-    for i in range(0,1):
+    for i in range(0,4):
         generation.append(copy.deepcopy(initial))
 
     #mutate something in each child
-    evolve(generation, req, 10)
+    best = evolve(generation, req, 10)
+    printSchedule(best, [])
 
 def evolve(parentGen, req, gensLeft):
+    if gensLeft <= 0:
+        return parentGen[0]
+
+    #double generation by copying each parent
+    temp = copy.deepcopy(parentGen)
+    parentGen = parentGen + temp
+
     #for each parent in the generation
     for parent in parentGen:
         #pick something to mutate
         mutate = random.choice(req['users'])
 
         #take them out of the list
-        print(mutate['name'])
-        printSchedule(parent, [])
         for x in parent:
-            # printResources(parent, x)
             for i in parent[x]['users']:
                 if mutate['name'] in i['name']:
                     #remove their name from the list and add back their resources
                     current = parent[x]
                     current['spaces']['count'][i['space']] = current['spaces']['count'][i['space']] + 1
                     current['computers']['count'][i['comp']] = current['computers']['count'][i['comp']] + 1
-                    print(i, "removed")
                     current['users'].remove(i)
-            # printResources(parent, x)
-            # print()
-        printSchedule(parent, [])
-        print()
+
         #add them back to the list in a random place
         addToList(mutate, parent)
-        printSchedule(parent, [])
+
+    # TODO: Find utility of every parent
+
+    # TODO: Sort generation by utility
+
+    #remove the lowest half of generation
+    child = parentGen[len(parentGen)//2:]
+
+    #move on to next generation
+    best = evolve(child, req, gensLeft-1)
+    return best
 
 
 def addToList(person, list):
     #choose random location
-    print()
     start = random.randrange(4,24)
     count = 0
     choices = []
@@ -209,8 +214,6 @@ def addToList(person, list):
         computers = list[i]['computers']['count']
         spaces = list[i]['spaces']['count']
         avail = getAvailable(list, i)
-        # print()
-        # print(avail)
         if len(avail['computers']) > 0 and len(avail['spaces']) > 0:
             compChoice = random.choice(avail['computers'])
             spaceChoice = random.choice(avail['spaces'])
@@ -218,7 +221,6 @@ def addToList(person, list):
             count = count + 1
             # print(compChoice, spaceChoice)
             if count == person['hoursNeeded']+1:
-                print(person,"added at", i)
                 counter = 0
                 for x in range(i-person['hoursNeeded'],i):
                     current = list[x]
@@ -232,7 +234,6 @@ def addToList(person, list):
             continue
         
     # for i in range (4,start):
-
 
 def printSchedule(limit, left):
     for i in range(4,24):
