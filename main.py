@@ -28,8 +28,38 @@ class projectOpen():
             print("Error 1")
             exit(1)
 
-    def utility(self):
-        pass
+    def utility(self, user, startTime, endTime, computer, space):
+        utilitySoFar = 0
+        data = None
+        for u in self.req['users']:
+            if u['name'] == user:
+                data = u
+        if data == None:
+            raise ArithmeticError
+        # +- 100 if startTime, endTime in availableTime
+        if startTime >= data['availableStart'] and endTime <= data['availableEnd']:
+            utilitySoFar += 100
+        else:
+            utilitySoFar -= 100
+        # +- 100 if computational needs met
+        if self.sp['computers']['ranking'][computer] >= self.sp['computers']['ranking'][data['computer']]:
+            utilitySoFar += 100
+        else:
+            utilitySoFar -= 100
+        # +- 50 if space needs met
+        if self.sp['spaces']['ranking'][space] >= self.sp['spaces']['ranking'][data['space']]:
+            utilitySoFar += 50
+        else:
+            utilitySoFar -= 50
+        # + 10 if extra computational power
+        if self.sp['computers']['ranking'][computer] > self.sp['computers']['ranking'][data['computer']]:
+            utilitySoFar += 10
+        # + 10 if extra space
+        if self.sp['spaces']['ranking'][space] > self.sp['spaces']['ranking'][data['space']]:
+            utilitySoFar += 10
+        # * importance
+        utilitySoFar *= data['importance']
+        
 
     def main(self):
         print()
