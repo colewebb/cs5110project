@@ -5,6 +5,7 @@
     },
     "computers": {
         "ranking": {
+
 		"powerful": 1,
 		"medium": 2,
 		"thin": 3
@@ -16,7 +17,14 @@
         }
     },
     "spaces": {
+        "ranking": {
+            "large": 1,
+            "medium": 2,
+            "small": 3
+        },
+        "count": {
             "medium": 1,
-	    "large" : 1
+            "large" : 1
+        }
     }
 }
