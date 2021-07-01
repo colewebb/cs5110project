@@ -1,3 +1,4 @@
+import random
 import json
 import enum
 import copy
@@ -33,7 +34,9 @@ class projectOpen():
             print("Assuming infinite space. Generating perfect configuration...")
         elif spExists and reqExists:
             print("Building schedule for the given space and requirements constraints....")
-            dataFusion(self.req, self.sp)
+            initial = dataFusion(self.req, self.sp)
+            genetic(initial, self.req)
+
         else:
             print("Error 1")
             exit(1)
@@ -119,26 +122,49 @@ def dataFusion(req, space):
                 next.append(user)
         else:
             next.append(user)
-
-    # print("could not find suitable place for", user['name'])
-    # test = user['space']
-
-        # print(test)
-        # print(Size[test].value)
     
     #TODO: check for a spot that has better equipment than the minimum
+    # test = user['space']
+    # print(test)
+    # print(Size[test].value)
+
+    return limit
+
+def genetic(initial, req):
+    # printSchedule(initial, [])
+    
+    #create generation
+    generation = []
+    for i in range(0,10):
+        generation.append(copy.deepcopy(initial))
+
+    #mutate something in each child
+    evolve(generation, req, 10)
+
+def evolve(parentGen, req, gensLeft):
+    #for each parent in the generation
+    for parent in parentGen:
+        #pick something to mutate
+        mutate = random.choice(req['users'])
+
+        #take them out of the list
+        for x in parent:
+            if mutate['name'] in parent[x]['users']:
+                parent[x]['users'].remove(mutate['name'])
         
-    # print(next)
-                   
-    printSchedule(limit, next)
-        
+        #add them back to the list in a random place
+        addToList(mutate, parent)
+
+
+def addToList(person, list):
+    #TODO: Implement adding person to the list somewhere randomly
+    pass
+
 def printSchedule(limit, left):
     for i in range(4,24):
         print(i, limit[i]['users'])
     for x in left:
         print("Could not find a suitable place for", x['name'])
-        
-
 
 
 if __name__ == "__main__":
