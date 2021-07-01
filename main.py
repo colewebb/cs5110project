@@ -1,5 +1,16 @@
+import random
 import json
+import enum
+import copy
 import os
+
+class Size(enum.Enum):
+    small = 1
+    medium = 2
+    large = 3
+
+    thin = 1
+    powerful = 3
 
 class projectOpen():
     def __init__(self, requirements, space):
@@ -23,10 +34,13 @@ class projectOpen():
             print("Assuming infinite space. Generating perfect configuration...")
         elif spExists and reqExists:
             print("Building schedule for the given space and requirements constraints....")
-            dataFusion(self.req, self.sp)
+            initial = dataFusion(self.req, self.sp)
+            genetic(initial, self.req)
+
         else:
             print("Error 1")
             exit(1)
+
 
     def utility(self, user, startTime, endTime, computer, space):
         utilitySoFar = 0
@@ -59,7 +73,6 @@ class projectOpen():
             utilitySoFar += 10
         # * importance
         utilitySoFar *= data['importance']
-        
 
     def main(self):
         print()
@@ -71,31 +84,117 @@ def dataFusion(req, space):
     limit = {}
     for i in range (space['globals']['buildingClosedEnd'], 25):
         limit[i] = {
-            'computers': space['computers'].copy(),
-            'spaces': space['spaces'].copy(),
+            'computers': copy.deepcopy(space['computers']),
+            'spaces': copy.deepcopy(space['spaces']),
             'users': []
         }
-        print(limit[i])
     
     #set initial matchups
+    notFound = []
     for user in req['users']:
         #start at their available start
         start = user['availableStart']
         end = user['availableEnd']
+        hours = user['hoursNeeded']
         minSpace = user['space']
         minComp = user['computer']
-        current = start
+        found = False
 
-        print(user['name'])
+        #if there is a computer and space that exactly matches their conditions
+        for i in range(start, end-hours):
+            if limit[i]['spaces'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
+                found = True
+                #check to make sure they are available for the entire time they need to work
+                for x in range(1,hours):
+                    if not limit[i+x]['spaces'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
+                        found = False
+                #if they are, then break
+                if found:
+                    current = i
+                    break
 
-        if limit[current]['spaces'][minSpace] > 0 and limit[current]['computers'][minComp] > 0:
-            limit[current]['spaces'][minSpace] = limit[current]['spaces'][minSpace] - 1
-            limit[current]['computers'][minComp] = limit[current]['computers'][minComp] -1
-            limit[current]['users'] = limit[current]['users'].append(user['name'])
+        #if there is, give it to them
+        if found:
+            for x in range(0,hours):
+                limit[current+x]['spaces'][minSpace] = limit[current+x]['spaces'][minSpace] - 1
+                limit[current+x]['computers']['count'][minComp] = limit[current+x]['computers']['count'][minComp] -1
+                limit[current+x]['users'].append(user['name'])
+        else:
+            notFound.append(user)
         
-    for i in range(space['globals']['buildingClosedEnd'], 25):
-        print(i, limit[i])
+    #take all users that didnt have conditions that matched exactly, expand their hours
+    next = []
+    for user in notFound:
+        hours = user['hoursNeeded']
+        minSpace = user['space']
+        minComp = user['computer']
+        found = False
+        for i in range(space['globals']['buildingClosedEnd'], 25):
+            if limit[i]['spaces'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
+                found = True
+                #check to make sure they are available for the entire time they need to work
+                if hours + i < 25:
+                    for x in range(1,hours):
+                        if not limit[i+x]['spaces'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
+                            found = False
+                #if they are, then break
+                if found:
+                    current = i
+                    break
+            #if there is, give it to them
+        if found:
+            if hours + current < 25:
+                for x in range(0,hours):
+                    limit[current+x]['spaces'][minSpace] = limit[current+x]['spaces'][minSpace] - 1
+                    limit[current+x]['computers']['count'][minComp] = limit[current+x]['computers']['count'][minComp] -1
+                    limit[current+x]['users'].append(user['name'])
+            else:
+                next.append(user)
+        else:
+            next.append(user)
+    
+    #TODO: check for a spot that has better equipment than the minimum
+    # test = user['space']
+    # print(test)
+    # print(Size[test].value)
+
+    return limit
+
+def genetic(initial, req):
+    # printSchedule(initial, [])
+    
+    #create generation
+    generation = []
+    for i in range(0,10):
+        generation.append(copy.deepcopy(initial))
+
+    #mutate something in each child
+    evolve(generation, req, 10)
+
+def evolve(parentGen, req, gensLeft):
+    #for each parent in the generation
+    for parent in parentGen:
+        #pick something to mutate
+        mutate = random.choice(req['users'])
+
+        #take them out of the list
+        for x in parent:
+            if mutate['name'] in parent[x]['users']:
+                parent[x]['users'].remove(mutate['name'])
         
+        #add them back to the list in a random place
+        addToList(mutate, parent)
+
+
+def addToList(person, list):
+    #TODO: Implement adding person to the list somewhere randomly
+    pass
+
+def printSchedule(limit, left):
+    for i in range(4,24):
+        print(i, limit[i]['users'])
+    for x in left:
+        print("Could not find a suitable place for", x['name'])
 
 
 
