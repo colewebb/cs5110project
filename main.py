@@ -34,8 +34,10 @@ class projectOpen():
             print("Assuming infinite space. Generating perfect configuration...")
         elif spExists and reqExists:
             print("Building schedule for the given space and requirements constraints....")
+            names = getNames(self.req)
+            print(names)
             initial = dataFusion(self.req, self.sp)
-            genetic(initial, self.req)
+            genetic(initial, self.req, names)
 
         else:
             print("Error 1")
@@ -115,52 +117,55 @@ def dataFusion(req, space):
         else:
             notFound.append(user)
         
-    #take all users that didnt have conditions that matched exactly, expand their hours
-    next = []
-    for user in notFound:
-        hours = user['hoursNeeded']
-        minSpace = user['space']
-        minComp = user['computer']
-        found = False
-        for i in range(space['globals']['buildingClosedEnd'], 25):
-            if limit[i]['spaces']['count'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
-                found = True
-                #check to make sure they are available for the entire time they need to work
-                if hours + i < 25:
-                    for x in range(1,hours):
-                        if not limit[i+x]['spaces']['count'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
-                            found = False
-                #if they are, then break
-                if found:
-                    current = i
-                    break
-            #if there is, give it to them
-        if found:
-            if hours + current < 25:
-                for x in range(0,hours):
-                    limit[current+x]['spaces']['count'][minSpace] = limit[current+x]['spaces']['count'][minSpace] - 1
-                    limit[current+x]['computers']['count'][minComp] = limit[current+x]['computers']['count'][minComp] -1
-                    limit[current+x]['users'].append({'name': user['name'],'comp':minComp, 'space': minSpace})
-            else:
-                next.append(user)
-        else:
-            next.append(user)
+    # #take all users that didnt have conditions that matched exactly, expand their hours
+    # next = []
+    # for user in notFound:
+    #     hours = user['hoursNeeded']
+    #     minSpace = user['space']
+    #     minComp = user['computer']
+    #     found = False
+    #     for i in range(space['globals']['buildingClosedEnd'], 25):
+    #         if limit[i]['spaces']['count'][minSpace] > 0 and limit[i]['computers']['count'][minComp] > 0:
+    #             found = True
+    #             #check to make sure they are available for the entire time they need to work
+    #             if hours + i < 25:
+    #                 for x in range(1,hours):
+    #                     if not limit[i+x]['spaces']['count'][minSpace] > 0 and not limit[i+x]['computers']['count'][minComp] > 0:
+    #                         found = False
+    #             #if they are, then break
+    #             if found:
+    #                 current = i
+    #                 break
+    #         #if there is, give it to them
+    #     if found:
+    #         if hours + current < 25:
+    #             for x in range(0,hours):
+    #                 limit[current+x]['spaces']['count'][minSpace] = limit[current+x]['spaces']['count'][minSpace] - 1
+    #                 limit[current+x]['computers']['count'][minComp] = limit[current+x]['computers']['count'][minComp] -1
+    #                 limit[current+x]['users'].append({'name': user['name'],'comp':minComp, 'space': minSpace})
+    #         else:
+    #             next.append(user)
+    #     else:
+    #         next.append(user)
     
-    #TODO: check for a spot that has better equipment than the minimum
+    for user in notFound:
+        addToList(user, limit)
 
     return limit
 
-def genetic(initial, req):    
+def genetic(initial, req, names):
+    # printSchedule(initial, [])
+    # print()    
     #create generation
     generation = []
     for i in range(0,4):
         generation.append(copy.deepcopy(initial))
 
     #mutate something in each child
-    best = evolve(generation, req, 10)
-    printSchedule(best, [])
+    best = evolve(generation, req, 10, names)
+    # printSchedule(best, [])
 
-def evolve(parentGen, req, gensLeft):
+def evolve(parentGen, req, gensLeft, names):
     if gensLeft <= 0:
         return parentGen[0]
 
@@ -186,6 +191,19 @@ def evolve(parentGen, req, gensLeft):
         #add them back to the list in a random place
         addToList(mutate, parent)
 
+        #check to make sure everyone is in the list
+        notInList = names.copy()
+
+        for i in parent:
+            for users in parent[i]['users']:
+                if users['name'] in notInList:
+                    notInList.remove(users['name'])
+
+        for user in notInList:
+            for temp in req['users']:
+                if user == temp['name']:
+                    addToList(temp, parent)
+
     # TODO: Find utility of every parent
 
     # TODO: Sort generation by utility
@@ -194,25 +212,48 @@ def evolve(parentGen, req, gensLeft):
     child = parentGen[len(parentGen)//2:]
 
     #move on to next generation
-    best = evolve(child, req, gensLeft-1)
+    best = evolve(child, req, gensLeft-1, names)
     return best
-
 
 def addToList(person, list):
     #choose random location
-    start = random.randrange(4,24)
+    start = random.randrange(person['availableStart'],person['availableEnd'])
     count = 0
     choices = []
-    for i in range (start,24):
-        computers = list[i]['computers']['count']
-        spaces = list[i]['spaces']['count']
+
+    #start at random spot in their given time frame
+    for i in range (start,person['availableEnd']):
+        avail = getAvailable(list, i)
+        #if there is any kind of computer and space keep going
+        if len(avail['computers']) > 0 and len(avail['spaces']) > 0:
+            compChoice = random.choice(avail['computers'])
+            spaceChoice = random.choice(avail['spaces'])
+            choices.append({'comp':compChoice, 'space':spaceChoice})
+            count = count + 1
+            #if there was a computer and space for as long as they need to work, give it to them
+            if count == person['hoursNeeded']+1:
+                counter = 0
+                for x in range(i-person['hoursNeeded'],i):
+                    current = list[x]
+                    current['spaces']['count'][choices[counter]['space']] = current['spaces']['count'][choices[counter]['space']] - 1
+                    current['computers']['count'][choices[counter]['comp']] = current['computers']['count'][choices[counter]['comp']] -1
+                    current['users'].append({'name': person['name'],'comp':choices[counter]['comp'], 'space': choices[counter]['space']})
+                    counter = counter + 1
+                return
+        #if no computer or no space available, restart
+        else:
+            choices = []
+            count = 0
+            continue
+
+    #if no suitable slot has been found, restart at their available start time and go to the randomly chosen time
+    for i in range (person['availableStart'], start):
         avail = getAvailable(list, i)
         if len(avail['computers']) > 0 and len(avail['spaces']) > 0:
             compChoice = random.choice(avail['computers'])
             spaceChoice = random.choice(avail['spaces'])
             choices.append({'comp':compChoice, 'space':spaceChoice})
             count = count + 1
-            # print(compChoice, spaceChoice)
             if count == person['hoursNeeded']+1:
                 counter = 0
                 for x in range(i-person['hoursNeeded'],i):
@@ -224,9 +265,14 @@ def addToList(person, list):
         else:
             choices = []
             count = 0
-            continue
-        
-    # for i in range (4,start):
+            print(person)
+            printSchedule(list, [])
+
+def getNames(req):
+    names = []
+    for user in req['users']:
+        names.append(user['name'])
+    return names
 
 def printSchedule(limit, left):
     for i in range(4,24):
