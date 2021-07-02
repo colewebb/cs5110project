@@ -58,6 +58,7 @@ class projectOpen():
             print("Error 1")
             exit(1)
 
+            
     def utility(self, user, computer, space):
         # start with some utility, since this is work going on available hours and that is good
         utilitySoFar = 20
