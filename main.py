@@ -43,31 +43,33 @@ class projectOpen():
 
 
     def utility(self, user, computer, space):
-        utilitySoFar = 0
+        # start with some utility, since this is work going on available hours and that is good
+        utilitySoFar = 20
         data = None
         for u in self.req['users']:
             if u['name'] == user:
                 data = u
         if data == None:
             raise ArithmeticError
-        # +- 100 if computational needs met
+        # +- 10 if computational needs met
         if self.sp['computers']['ranking'][computer] >= self.sp['computers']['ranking'][data['computer']]:
             utilitySoFar += 10
         else:
             utilitySoFar -= 10
-        # +- 50 if space needs met
+        # +- 5 if space needs met
         if self.sp['spaces']['ranking'][space] >= self.sp['spaces']['ranking'][data['space']]:
             utilitySoFar += 5
         else:
             utilitySoFar -= 5
-        # + 10 if extra computational power
+        # + 1 if extra computational power
         if self.sp['computers']['ranking'][computer] > self.sp['computers']['ranking'][data['computer']]:
             utilitySoFar += 1
-        # + 10 if extra space
+        # + 1 if extra space
         if self.sp['spaces']['ranking'][space] > self.sp['spaces']['ranking'][data['space']]:
             utilitySoFar += 1
         # * importance
         utilitySoFar *= data['importance']
+        return utilitySoFar
 
 
 def dataFusion(req, space):
