@@ -5,14 +5,13 @@
     },
     "computers": {
         "ranking": {
-
-		"powerful": 1,
-		"medium": 2,
-		"thin": 3
+		    "powerful": 1,
+		    "medium": 2,
+		    "thin": 3
         },
         "count": {
- 		"powerful": 1,
-		"medium": 1,
+ 		    "powerful": 1,
+		    "medium": 1,
 	        "thin": 1
         }
     },

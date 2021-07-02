@@ -6,7 +6,7 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-	          "hoursNeeded": 2,
+	        "hoursNeeded": 2,
             "importance": 10
         },
 	{
@@ -15,7 +15,7 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-	          "hoursNeeded": 4,
+	        "hoursNeeded": 4,
             "importance": 10
         },
 	{
@@ -24,7 +24,7 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-	          "hoursNeeded": 5,
+	        "hoursNeeded": 5,
             "importance": 10
         },
 	{
@@ -33,7 +33,7 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-	          "hoursNeeded": 3,
+	        "hoursNeeded": 3,
             "importance": 10
         },
 	{
@@ -42,7 +42,7 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-	          "hoursNeeded": 3,
+	        "hoursNeeded": 3,
             "importance": 10
         },
 	{
@@ -51,7 +51,7 @@
             "computer": "powerful",
             "availableStart": 9,
             "availableEnd": 19,
-	          "hoursNeeded": 5,
+	        "hoursNeeded": 5,
             "importance": 10
         },
         {
@@ -60,7 +60,7 @@
             "computer": "thin",
             "availableStart": 12,
             "availableEnd": 23,
-	          "hoursNeeded": 3,
+	        "hoursNeeded": 3,
             "importance": 99
         }
     ]

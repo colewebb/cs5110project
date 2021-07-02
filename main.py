@@ -5,14 +5,6 @@ import enum
 import copy
 import os
 
-class Size(enum.Enum):
-    small = 1
-    medium = 2
-    large = 3
-
-    thin = 1
-    powerful = 3
-
 class projectOpen():
     def __init__(self, requirements, space):
         reqExists = False
@@ -283,10 +275,7 @@ def getAvailable(list, index):
     return {'computers': computers, 'spaces':spaces}
 
 if __name__ == "__main__":
-    # requirementsLocation = input(" Requirements location >>> ")
-    # spaceLocation = input(" Space location >>> ")
     here = os.path.dirname(os.path.abspath(__file__))
-    requirementsLocation = open(os.path.join(here, "test1Requirements.json"),"r")
-    spaceLocation = open(os.path.join(here, "test1Space.json"),"r")
-
+    requirementsLocation = open(os.path.join(here, "testRequirements.json"),"r")
+    spaceLocation = open(os.path.join(here, "testSpace.json"),"r")
     pO = projectOpen(requirementsLocation, spaceLocation)
