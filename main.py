@@ -42,7 +42,7 @@ class projectOpen():
             exit(1)
 
 
-    def utility(self, user, startTime, endTime, computer, space):
+    def utility(self, user, computer, space):
         utilitySoFar = 0
         data = None
         for u in self.req['users']:
@@ -50,34 +50,25 @@ class projectOpen():
                 data = u
         if data == None:
             raise ArithmeticError
-        # +- 100 if startTime, endTime in availableTime
-        if startTime >= data['availableStart'] and endTime <= data['availableEnd']:
-            utilitySoFar += 100
-        else:
-            utilitySoFar -= 100
         # +- 100 if computational needs met
         if self.sp['computers']['ranking'][computer] >= self.sp['computers']['ranking'][data['computer']]:
-            utilitySoFar += 100
+            utilitySoFar += 10
         else:
-            utilitySoFar -= 100
+            utilitySoFar -= 10
         # +- 50 if space needs met
         if self.sp['spaces']['ranking'][space] >= self.sp['spaces']['ranking'][data['space']]:
-            utilitySoFar += 50
+            utilitySoFar += 5
         else:
-            utilitySoFar -= 50
+            utilitySoFar -= 5
         # + 10 if extra computational power
         if self.sp['computers']['ranking'][computer] > self.sp['computers']['ranking'][data['computer']]:
-            utilitySoFar += 10
+            utilitySoFar += 1
         # + 10 if extra space
         if self.sp['spaces']['ranking'][space] > self.sp['spaces']['ranking'][data['space']]:
-            utilitySoFar += 10
+            utilitySoFar += 1
         # * importance
         utilitySoFar *= data['importance']
 
-    def main(self):
-        print()
-        # print(self.req)
-        # print(self.sp)
 
 def dataFusion(req, space):
     #set up limits
@@ -266,4 +257,3 @@ if __name__ == "__main__":
     spaceLocation = open(os.path.join(here, "test1Space.json"),"r")
 
     pO = projectOpen(requirementsLocation, spaceLocation)
-    pO.main()
